@@ -8,23 +8,23 @@ import (
 	"google.golang.org/genai"
 )
 
-// Client ...
+// Client is an LLM client.
 type Client struct {
 	cl    *genai.Client
 	model Model
 }
 
-// Model ...
+// Model specifies an LLM model.
 type Model string
 
 const (
-	// Gemini3FlashPreview ...
+	// Gemini3FlashPreview represents the Gemini 3 Flash Preview model.
 	Gemini3FlashPreview Model = "gemini-3-flash-preview"
-	// Gemini3ProPreview ...
+	// Gemini3ProPreview represents the Gemini 3 Pro Preview model.
 	Gemini3ProPreview Model = "gemini-3-pro-preview"
 )
 
-// NewClient ...
+// NewClient creates a new client.
 func NewClient(ctx context.Context, model Model) (*Client, error) {
 	cl, err := genai.NewClient(ctx, nil)
 	if err != nil {
@@ -33,7 +33,7 @@ func NewClient(ctx context.Context, model Model) (*Client, error) {
 	return &Client{cl: cl, model: model}, nil
 }
 
-// GenerateText ...
+// GenerateText generates a text response.
 func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content) (*Response, error) {
 	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, nil)
 	if err != nil {
@@ -42,7 +42,7 @@ func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content) (*Respo
 	return &Response{resp: resp}, nil
 }
 
-// Generate ...
+// Generate generates a structured response.
 func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content) (*T, error) {
 	schema, err := jsonschema.For[T](nil)
 	if err != nil {
@@ -63,12 +63,12 @@ func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content) (*T, 
 	return &obj, nil
 }
 
-// NewText ...
+// NewText creates a new text content.
 func NewText(text string) []*genai.Content {
 	return genai.Text(text)
 }
 
-// Response ...
+// Response is an LLM response.
 type Response struct {
 	resp *genai.GenerateContentResponse
 }

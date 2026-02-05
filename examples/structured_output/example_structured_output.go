@@ -8,7 +8,7 @@ import (
 	"github.com/phomola/ai-go/gemini/ai"
 )
 
-// Actor ...
+// Actor contains information about an actor.
 type Actor struct {
 	Name        string
 	YearOfBirth int
@@ -18,7 +18,7 @@ type Actor struct {
 	}
 }
 
-// Print ...
+// Print prints the information represented by [Actor].
 func (a *Actor) Print() {
 	fmt.Println("name:", a.Name)
 	fmt.Println("year of birth:", a.YearOfBirth)
