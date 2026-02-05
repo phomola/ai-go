@@ -10,13 +10,16 @@ import (
 
 func main() {
 	ctx := context.Background()
+
 	cl, err := ai.NewClient(ctx, ai.Gemini3FlashPreview)
 	if err != nil {
 		log.Fatal(err)
 	}
-	resp, err := cl.Generate(ctx, ai.NewText("What is an LLM?"))
+
+	resp, err := cl.GenerateText(ctx, ai.NewText("What is an LLM? Generate a short answer."))
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	fmt.Println(resp)
 }

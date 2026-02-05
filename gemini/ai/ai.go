@@ -2,7 +2,9 @@ package ai
 
 import (
 	"context"
+	"encoding/json"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"google.golang.org/genai"
 )
 
@@ -31,13 +33,34 @@ func NewClient(ctx context.Context, model Model) (*Client, error) {
 	return &Client{cl: cl, model: model}, nil
 }
 
-// Generate ...
-func (cl *Client) Generate(ctx context.Context, in []*genai.Content) (*Response, error) {
+// GenerateText ...
+func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content) (*Response, error) {
 	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, nil)
 	if err != nil {
 		return nil, err
 	}
 	return &Response{resp: resp}, nil
+}
+
+// Generate ...
+func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content) (*T, error) {
+	schema, err := jsonschema.For[T](nil)
+	if err != nil {
+		return nil, err
+	}
+	config := &genai.GenerateContentConfig{
+		ResponseMIMEType:   "application/json",
+		ResponseJsonSchema: schema,
+	}
+	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, config)
+	if err != nil {
+		return nil, err
+	}
+	var obj T
+	if err := json.Unmarshal([]byte(resp.Text()), &obj); err != nil {
+		return nil, err
+	}
+	return &obj, nil
 }
 
 // NewText ...
