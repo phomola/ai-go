@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/fealsamh/go-utils/nocopy"
 	"github.com/google/jsonschema-go/jsonschema"
 	"google.golang.org/genai"
 )
@@ -57,7 +58,7 @@ func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content) (*T, 
 		return nil, err
 	}
 	var obj T
-	if err := json.Unmarshal([]byte(resp.Text()), &obj); err != nil {
+	if err := json.Unmarshal(nocopy.Bytes(resp.Text()), &obj); err != nil {
 		return nil, err
 	}
 	return &obj, nil
@@ -66,6 +67,24 @@ func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content) (*T, 
 // NewText creates a new text content.
 func NewText(text string) []*genai.Content {
 	return genai.Text(text)
+}
+
+const (
+	// MimeTypeImageJPEG is the image/jpeg type.
+	MimeTypeImageJPEG = "image/jpeg"
+	// MimeTypeImagePNG is the image/png type.
+	MimeTypeImagePNG = "image/png"
+)
+
+// NewTextWithImage creates a new text content.
+func NewTextWithImage(text string, data []byte, mimeType string) []*genai.Content {
+	parts := []*genai.Part{
+		genai.NewPartFromBytes(data, mimeType),
+		genai.NewPartFromText(text),
+	}
+	return []*genai.Content{
+		genai.NewContentFromParts(parts, genai.RoleUser),
+	}
 }
 
 // Response is an LLM response.
