@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/google/jsonschema-go/jsonschema"
 	"google.golang.org/genai"
 )
 
@@ -44,7 +43,7 @@ func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content) (*Respo
 
 // Generate generates a structured response.
 func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content) (*T, error) {
-	schema, err := jsonschema.For[T](nil)
+	schema, err := schemaFor[T]()
 	if err != nil {
 		return nil, err
 	}
