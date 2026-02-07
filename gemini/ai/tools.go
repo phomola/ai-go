@@ -6,13 +6,13 @@ import (
 	"google.golang.org/genai"
 )
 
-// Tool ...
+// Tool is an LLM tool with functions.
 type Tool struct {
 	funcDecls []*genai.FunctionDeclaration
 	functions map[string]func([]byte) ([]byte, error)
 }
 
-// AddFunction ...
+// AddFunction adds a function to a tool.
 func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O, error)) error {
 	inSchema, err := schemaFor[I]()
 	if err != nil {
