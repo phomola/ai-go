@@ -16,7 +16,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	resp, err := cl.GenerateText(ctx, ai.NewText("What is an LLM? Generate a short answer."))
+	resp, err := cl.GenerateText(ctx, ai.NewText("What is an LLM? Generate a short answer."), nil)
 	if err != nil {
 		log.Fatal(err)
 	}

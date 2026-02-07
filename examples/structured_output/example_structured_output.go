@@ -36,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	resp, err := ai.Generate[Actor](ctx, cl, ai.NewText("Provide information about Brad Pitt with a list of all his movies."))
+	resp, err := ai.Generate[Actor](ctx, cl, ai.NewText("Provide information about Brad Pitt with a list of all his movies."), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
