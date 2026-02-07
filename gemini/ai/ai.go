@@ -3,9 +3,9 @@ package ai
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/fealsamh/go-utils/nocopy"
-	"github.com/google/jsonschema-go/jsonschema"
 	"google.golang.org/genai"
 )
 
@@ -35,8 +35,16 @@ func NewClient(ctx context.Context, model Model) (*Client, error) {
 }
 
 // GenerateText generates a text response.
-func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content) (*Response, error) {
-	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, nil)
+func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content, tools []*Tool) (*Response, error) {
+	genaiTools := make([]*genai.Tool, 0, len(tools))
+	for _, t := range tools {
+		genaiTools = append(genaiTools, t.tool())
+	}
+	var config *genai.GenerateContentConfig
+	if len(genaiTools) > 0 {
+		config = &genai.GenerateContentConfig{Tools: genaiTools}
+	}
+	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, config)
 	if err != nil {
 		return nil, err
 	}
@@ -44,18 +52,57 @@ func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content) (*Respo
 }
 
 // Generate generates a structured response.
-func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content) (*T, error) {
+func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content, tools []*Tool) (*T, error) {
 	schema, err := schemaFor[T]()
 	if err != nil {
 		return nil, err
+	}
+	genaiTools := make([]*genai.Tool, 0, len(tools))
+	for _, t := range tools {
+		genaiTools = append(genaiTools, t.tool())
 	}
 	config := &genai.GenerateContentConfig{
 		ResponseMIMEType:   "application/json",
 		ResponseJsonSchema: schema,
 	}
+	if len(genaiTools) > 0 {
+		config.Tools = genaiTools
+	}
 	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, config)
 	if err != nil {
 		return nil, err
+	}
+	if len(resp.FunctionCalls()) > 0 {
+		functions := make(map[string]func([]byte) ([]byte, error))
+		for _, t := range tools {
+			for k, v := range t.functions {
+				functions[k] = v
+			}
+		}
+		in = append(in, resp.Candidates[0].Content)
+		for _, call := range resp.FunctionCalls() {
+			f, ok := functions[call.Name]
+			if !ok {
+				return nil, fmt.Errorf("tool function '%s' unknown", call.Name)
+			}
+			b, err := json.Marshal(call.Args)
+			if err != nil {
+				return nil, err
+			}
+			b, err = f(b)
+			if err != nil {
+				return nil, err
+			}
+			var m map[string]any
+			if err := json.Unmarshal(b, &m); err != nil {
+				return nil, err
+			}
+			in = append(in, genai.NewContentFromFunctionResponse(call.Name, map[string]any{"output": m}, ""))
+		}
+		resp, err = cl.cl.Models.GenerateContent(ctx, string(cl.model), in, config)
+		if err != nil {
+			return nil, err
+		}
 	}
 	var obj T
 	if err := json.Unmarshal(nocopy.Bytes(resp.Text()), &obj); err != nil {
