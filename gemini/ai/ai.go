@@ -44,7 +44,7 @@ func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content, tools [
 	if len(genaiTools) > 0 {
 		config = &genai.GenerateContentConfig{Tools: genaiTools}
 	}
-	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, config)
+	resp, err := cl.generate(ctx, in, config, tools)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +68,18 @@ func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content, tools
 	if len(genaiTools) > 0 {
 		config.Tools = genaiTools
 	}
+	resp, err := cl.generate(ctx, in, config, tools)
+	if err != nil {
+		return nil, err
+	}
+	var obj T
+	if err := json.Unmarshal(nocopy.Bytes(resp.Text()), &obj); err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+func (cl *Client) generate(ctx context.Context, in []*genai.Content, config *genai.GenerateContentConfig, tools []*Tool) (*genai.GenerateContentResponse, error) {
 	resp, err := cl.cl.Models.GenerateContent(ctx, string(cl.model), in, config)
 	if err != nil {
 		return nil, err
@@ -104,11 +116,7 @@ func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content, tools
 			return nil, err
 		}
 	}
-	var obj T
-	if err := json.Unmarshal(nocopy.Bytes(resp.Text()), &obj); err != nil {
-		return nil, err
-	}
-	return &obj, nil
+	return resp, err
 }
 
 // NewText creates a new text content.
