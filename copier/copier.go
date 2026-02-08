@@ -84,17 +84,39 @@ func fromMap(m map[string]interface{}, v reflect.Value) error {
 		} else {
 			switch f.Type.Kind() {
 			case reflect.Int:
-				x, ok := m[fn].(int)
-				if !ok {
-					return fmt.Errorf("expected int for '%s'", fn)
+				switch x := m[fn].(type) {
+				case int:
+					v.FieldByIndex(f.Index).SetInt(int64(x))
+				case float32:
+					v.FieldByIndex(f.Index).SetInt(int64(x))
+				case float64:
+					v.FieldByIndex(f.Index).SetInt(int64(x))
+				default:
+					return fmt.Errorf("expected number for '%s'", fn)
 				}
-				v.FieldByIndex(f.Index).SetInt(int64(x))
+			case reflect.Float32, reflect.Float64:
+				switch x := m[fn].(type) {
+				case int:
+					v.FieldByIndex(f.Index).SetFloat(float64(x))
+				case float32:
+					v.FieldByIndex(f.Index).SetFloat(float64(x))
+				case float64:
+					v.FieldByIndex(f.Index).SetFloat(x)
+				default:
+					return fmt.Errorf("expected number for '%s'", fn)
+				}
 			case reflect.String:
 				x, ok := m[fn].(string)
 				if !ok {
 					return fmt.Errorf("expected string for '%s'", fn)
 				}
 				v.FieldByIndex(f.Index).SetString(x)
+			case reflect.Bool:
+				x, ok := m[fn].(bool)
+				if !ok {
+					return fmt.Errorf("expected boolean for '%s'", fn)
+				}
+				v.FieldByIndex(f.Index).SetBool(x)
 			}
 		}
 	}
