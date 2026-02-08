@@ -36,6 +36,9 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O,
 			return nil, err
 		}
 		out, err := f(in)
+		if err != nil {
+			return nil, err
+		}
 		return copier.ToMap(out)
 	}
 	return nil
