@@ -14,7 +14,7 @@ func ToMap(obj interface{}) (map[string]interface{}, error) {
 	}
 	t := v.Type()
 	if t.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("only instance of struct and pointer to struct can be converted to map (has %s)", t)
+		return nil, fmt.Errorf("only instances of struct and pointer to struct can be converted to map (has %s)", t)
 	}
 	m := make(map[string]interface{}, t.NumField())
 	for i := 0; i < t.NumField(); i++ {
@@ -39,4 +39,64 @@ func ToMap(obj interface{}) (map[string]interface{}, error) {
 		}
 	}
 	return m, nil
+}
+
+// FromMap ...
+func FromMap[T any](m map[string]interface{}) (*T, error) {
+	obj := new(T)
+	if err := fromMap(m, reflect.ValueOf(obj).Elem()); err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func fromMap(m map[string]interface{}, v reflect.Value) error {
+	t := v.Type()
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		js := f.Tag.Get("json")
+		if js == "-" {
+			continue
+		}
+		fn := f.Name
+		if n := strings.Split(js, ",")[0]; n != "" {
+			fn = n
+		}
+		if f.Type.Kind() == reflect.Struct {
+			m2, ok := m[fn].(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("expected map for '%s'", fn)
+			}
+			v2 := v.FieldByIndex(f.Index)
+			if err := fromMap(m2, v2); err != nil {
+				return err
+			}
+		} else if f.Type.Kind() == reflect.Pointer && f.Type.Elem().Kind() == reflect.Struct {
+			m2, ok := m[fn].(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("expected map for '%s'", fn)
+			}
+			v2 := reflect.New(f.Type.Elem())
+			if err := fromMap(m2, v2.Elem()); err != nil {
+				return err
+			}
+			v.FieldByIndex(f.Index).Set(v2)
+		} else {
+			switch f.Type.Kind() {
+			case reflect.Int:
+				x, ok := m[fn].(int)
+				if !ok {
+					return fmt.Errorf("expected int for '%s'", fn)
+				}
+				v.FieldByIndex(f.Index).SetInt(int64(x))
+			case reflect.String:
+				x, ok := m[fn].(string)
+				if !ok {
+					return fmt.Errorf("expected string for '%s'", fn)
+				}
+				v.FieldByIndex(f.Index).SetString(x)
+			}
+		}
+	}
+	return nil
 }
