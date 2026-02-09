@@ -21,6 +21,14 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O,
 	if err != nil {
 		return err
 	}
+	inRs, err := inSchema.Resolve(nil)
+	if err != nil {
+		return err
+	}
+	outRs, err := outSchema.Resolve(nil)
+	if err != nil {
+		return err
+	}
 	tool.funcDecls = append(tool.funcDecls, &genai.FunctionDeclaration{
 		Name:                 name,
 		Description:          description,
@@ -31,6 +39,9 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O,
 		tool.functions = make(map[string]func(map[string]any) (map[string]any, error))
 	}
 	tool.functions[name] = func(inMap map[string]any) (map[string]any, error) {
+		if err := inRs.Validate(inMap); err != nil {
+			return nil, err
+		}
 		in, err := copier.FromMap[I](inMap)
 		if err != nil {
 			return nil, err
@@ -39,7 +50,14 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O,
 		if err != nil {
 			return nil, err
 		}
-		return copier.ToMap(out)
+		outMap, err := copier.ToMap(out)
+		if err != nil {
+			return nil, err
+		}
+		if err := outRs.Validate(outMap); err != nil {
+			return nil, err
+		}
+		return outMap, nil
 	}
 	return nil
 }
