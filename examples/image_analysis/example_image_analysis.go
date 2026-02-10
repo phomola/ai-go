@@ -65,7 +65,7 @@ func main() {
 	}
 
 	resp, err := ai.Generate[Menu](ctx, cl,
-		ai.NewTextWithImage("Extract all the items from the menu. Include the weight in the 'portion' property.", b, mimeType), nil)
+		ai.NewTextWithBytes("Extract all the items from the menu. Include the weight in the 'portion' property.", b, mimeType), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
