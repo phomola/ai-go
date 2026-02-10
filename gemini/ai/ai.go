@@ -121,10 +121,12 @@ const (
 	MimeTypeImageJPEG = "image/jpeg"
 	// MimeTypeImagePNG is the image/png type.
 	MimeTypeImagePNG = "image/png"
+	// MimeTypePDF is the application/pdf type.
+	MimeTypePDF = "application/pdf"
 )
 
-// NewTextWithImage creates a new text content.
-func NewTextWithImage(text string, data []byte, mimeType string) []*genai.Content {
+// NewTextWithBytes creates a new text content with bytes.
+func NewTextWithBytes(text string, data []byte, mimeType string) []*genai.Content {
 	parts := []*genai.Part{
 		genai.NewPartFromBytes(data, mimeType),
 		genai.NewPartFromText(text),
