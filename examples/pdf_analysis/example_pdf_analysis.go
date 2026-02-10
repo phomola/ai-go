@@ -15,20 +15,13 @@ import (
 )
 
 type (
-	// Menu ...
-	Menu struct {
-		Items []Item `json:"items" jsonschema:"The list of items on the menu."`
-	}
-
-	// Item ...
-	Item struct {
-		Name              string  `json:"name"`
-		NameInEnglish     string  `json:"nameInEnglish" jsonschema:"The name of the item in English."`
-		Price             float64 `json:"price"`
-		Currency          string  `json:"currency,omitempty"`
-		Category          string  `json:"category,omitempty"`
-		CategoryInEnglish string  `json:"categoryInEnglish,omitempty" jsonschema:"The category of the item in English."`
-		Portion           string  `json:"portion,omitempty" jsonschema:"The size or weight of the item."`
+	// CV ...
+	CV struct {
+		Name     string `json:"name"`
+		Email    string `json:"email,omitempty"`
+		Phone    string `json:"phone,omitempty"`
+		Location string `json:"location,omitempty"`
+		Summary  string `json:"summary,omitempty"`
 	}
 )
 
@@ -68,8 +61,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	resp, err := ai.Generate[Menu](ctx, cl,
-		ai.NewTextWithBytes("Extract all the items from the menu. Include the weight in the 'portion' property.", b, mimeType), nil)
+	resp, err := ai.Generate[CV](ctx, cl,
+		ai.NewTextWithBytes("Extract relevant information for the CV file.", b, mimeType), nil)
 	if err != nil {
 		log.Fatal(err)
 	}

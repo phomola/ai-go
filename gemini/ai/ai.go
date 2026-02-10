@@ -85,7 +85,7 @@ func (cl *Client) generate(ctx context.Context, in []*genai.Content, config *gen
 		return nil, err
 	}
 	if len(resp.FunctionCalls()) > 0 {
-		functions := make(map[string]func([]byte) ([]byte, error))
+		functions := make(map[string]func(map[string]any) (map[string]any, error))
 		for _, t := range tools {
 			for k, v := range t.functions {
 				functions[k] = v
@@ -97,19 +97,11 @@ func (cl *Client) generate(ctx context.Context, in []*genai.Content, config *gen
 			if !ok {
 				return nil, fmt.Errorf("tool function '%s' unknown", call.Name)
 			}
-			b, err := json.Marshal(call.Args)
+			out, err := f(call.Args)
 			if err != nil {
 				return nil, err
 			}
-			b, err = f(b)
-			if err != nil {
-				return nil, err
-			}
-			var m map[string]any
-			if err := json.Unmarshal(b, &m); err != nil {
-				return nil, err
-			}
-			in = append(in, genai.NewContentFromFunctionResponse(call.Name, map[string]any{"output": m}, ""))
+			in = append(in, genai.NewContentFromFunctionResponse(call.Name, map[string]any{"output": out}, ""))
 		}
 		resp, err = cl.cl.Models.GenerateContent(ctx, string(cl.model), in, config)
 		if err != nil {
@@ -129,10 +121,12 @@ const (
 	MimeTypeImageJPEG = "image/jpeg"
 	// MimeTypeImagePNG is the image/png type.
 	MimeTypeImagePNG = "image/png"
+	// MimeTypePDF is the application/pdf type.
+	MimeTypePDF = "application/pdf"
 )
 
-// NewTextWithImage creates a new text content.
-func NewTextWithImage(text string, data []byte, mimeType string) []*genai.Content {
+// NewTextWithBytes creates a new text content with bytes.
+func NewTextWithBytes(text string, data []byte, mimeType string) []*genai.Content {
 	parts := []*genai.Part{
 		genai.NewPartFromBytes(data, mimeType),
 		genai.NewPartFromText(text),
