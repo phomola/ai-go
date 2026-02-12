@@ -167,6 +167,16 @@ func fromMapValue(x interface{}, v reflect.Value) error {
 				v.SetFloat(float64(x2))
 			case int64:
 				v.SetFloat(float64(x2))
+			case uint:
+				v.SetFloat(float64(x2))
+			case uint8:
+				v.SetFloat(float64(x2))
+			case uint16:
+				v.SetFloat(float64(x2))
+			case uint32:
+				v.SetFloat(float64(x2))
+			case uint64:
+				v.SetFloat(float64(x2))
 			case float32:
 				v.SetFloat(float64(x2))
 			case float64:
