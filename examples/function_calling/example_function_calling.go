@@ -54,7 +54,7 @@ func main() {
 	}
 
 	var weatherTool ai.Tool
-	ai.AddFunction(&weatherTool, "weatherTool", "Provides weather forecasts for the US.", func(in *weatherRequest) (*toolOutput, error) {
+	if err := ai.AddFunction(&weatherTool, "weatherTool", "Provides weather forecasts for the US.", func(in *weatherRequest) (*toolOutput, error) {
 		b, err := json.Marshal(in)
 		if err != nil {
 			return nil, err
@@ -90,7 +90,9 @@ func main() {
 			periods = append(periods, modelPeriod{p.Name, p.Detailed})
 		}
 		return &toolOutput{Periods: periods}, nil
-	})
+	}); err != nil {
+		log.Fatal(err)
+	}
 
 	resp, err := cl.GenerateText(ctx, ai.NewText("What's the weather forecast for Seattle?"), []*ai.Tool{&weatherTool})
 	if err != nil {
