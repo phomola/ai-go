@@ -121,9 +121,17 @@ func fromMapValue(x interface{}, v reflect.Value) error {
 		v.Set(v2)
 	} else {
 		switch t.Kind() {
-		case reflect.Int:
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			switch x2 := x.(type) {
 			case int:
+				v.SetInt(int64(x2))
+			case int8:
+				v.SetInt(int64(x2))
+			case int16:
+				v.SetInt(int64(x2))
+			case int32:
+				v.SetInt(int64(x2))
+			case int64:
 				v.SetInt(int64(x2))
 			case float32:
 				v.SetInt(int64(x2))
@@ -132,9 +140,32 @@ func fromMapValue(x interface{}, v reflect.Value) error {
 			default:
 				return fmt.Errorf("expected number instead of '%s'", x)
 			}
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			switch x2 := x.(type) {
+			case uint:
+				v.SetUint(uint64(x2))
+			case uint8:
+				v.SetUint(uint64(x2))
+			case uint16:
+				v.SetUint(uint64(x2))
+			case uint32:
+				v.SetUint(uint64(x2))
+			case uint64:
+				v.SetUint(uint64(x2))
+			default:
+				return fmt.Errorf("expected number instead of '%s'", x)
+			}
 		case reflect.Float32, reflect.Float64:
 			switch x2 := x.(type) {
 			case int:
+				v.SetFloat(float64(x2))
+			case int8:
+				v.SetFloat(float64(x2))
+			case int16:
+				v.SetFloat(float64(x2))
+			case int32:
+				v.SetFloat(float64(x2))
+			case int64:
 				v.SetFloat(float64(x2))
 			case float32:
 				v.SetFloat(float64(x2))
@@ -155,6 +186,8 @@ func fromMapValue(x interface{}, v reflect.Value) error {
 				return fmt.Errorf("expected boolean instead of '%s'", x)
 			}
 			v.SetBool(x2)
+		default:
+			return fmt.Errorf("unhandled type '%s'", t)
 		}
 	}
 	return nil
