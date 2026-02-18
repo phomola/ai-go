@@ -7,7 +7,7 @@ import (
 )
 
 // ToMap ...
-func ToMap(obj interface{}) (map[string]interface{}, error) {
+func ToMap(obj any) (map[string]any, error) {
 	v := reflect.ValueOf(obj)
 	if v.Kind() == reflect.Pointer {
 		v = v.Elem()
@@ -16,7 +16,7 @@ func ToMap(obj interface{}) (map[string]interface{}, error) {
 	if t.Kind() != reflect.Struct {
 		return nil, fmt.Errorf("only instances of struct and pointer to struct can be converted to map (has %s)", t)
 	}
-	m := make(map[string]interface{}, t.NumField())
+	m := make(map[string]any, t.NumField())
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 		js := f.Tag.Get("json")
@@ -36,13 +36,13 @@ func ToMap(obj interface{}) (map[string]interface{}, error) {
 	return m, nil
 }
 
-func toMapValue(v reflect.Value) (interface{}, error) {
+func toMapValue(v reflect.Value) (any, error) {
 	t := v.Type()
 	if t.Kind() == reflect.Struct || t.Kind() == reflect.Pointer && t.Elem().Kind() == reflect.Struct {
 		return ToMap(v.Interface())
 	}
 	if t.Kind() == reflect.Slice {
-		sl := make([]interface{}, 0, v.Len())
+		sl := make([]any, 0, v.Len())
 		for i := 0; i < v.Len(); i++ {
 			v2, err := toMapValue(v.Index(i))
 			if err != nil {
@@ -56,7 +56,7 @@ func toMapValue(v reflect.Value) (interface{}, error) {
 }
 
 // FromMap ...
-func FromMap[T any](m map[string]interface{}) (*T, error) {
+func FromMap[T any](m map[string]any) (*T, error) {
 	obj := new(T)
 	if err := fromMap(m, reflect.ValueOf(obj).Elem()); err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func FromMap[T any](m map[string]interface{}) (*T, error) {
 	return obj, nil
 }
 
-func fromMap(m map[string]interface{}, v reflect.Value) error {
+func fromMap(m map[string]any, v reflect.Value) error {
 	t := v.Type()
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
@@ -87,10 +87,10 @@ func fromMap(m map[string]interface{}, v reflect.Value) error {
 	return nil
 }
 
-func fromMapValue(x interface{}, v reflect.Value) error {
+func fromMapValue(x any, v reflect.Value) error {
 	t := v.Type()
 	if t.Kind() == reflect.Struct {
-		m, ok := x.(map[string]interface{})
+		m, ok := x.(map[string]any)
 		if !ok {
 			return fmt.Errorf("expected map instead of '%s'", x)
 		}
@@ -98,7 +98,7 @@ func fromMapValue(x interface{}, v reflect.Value) error {
 			return err
 		}
 	} else if t.Kind() == reflect.Pointer && t.Elem().Kind() == reflect.Struct {
-		m, ok := x.(map[string]interface{})
+		m, ok := x.(map[string]any)
 		if !ok {
 			return fmt.Errorf("expected map instead of '%s'", x)
 		}
@@ -108,7 +108,7 @@ func fromMapValue(x interface{}, v reflect.Value) error {
 		}
 		v.Set(v2)
 	} else if t.Kind() == reflect.Slice {
-		sl, ok := x.([]interface{})
+		sl, ok := x.([]any)
 		if !ok {
 			return fmt.Errorf("expected slice instead of '%s'", x)
 		}

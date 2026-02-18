@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"maps"
 
 	"github.com/fealsamh/go-utils/nocopy"
 	"google.golang.org/genai"
@@ -87,9 +88,7 @@ func (cl *Client) generate(ctx context.Context, in []*genai.Content, config *gen
 	if len(resp.FunctionCalls()) > 0 {
 		functions := make(map[string]func(map[string]any) (map[string]any, error))
 		for _, t := range tools {
-			for k, v := range t.functions {
-				functions[k] = v
-			}
+			maps.Copy(functions, t.functions)
 		}
 		in = append(in, resp.Candidates[0].Content)
 		for _, call := range resp.FunctionCalls() {
