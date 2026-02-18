@@ -37,26 +37,26 @@ func TestToMap(t *testing.T) {
 	req.Equal(5, len(m))
 	req.Equal(1234, m["X"])
 	req.Equal("abcd", m["y"])
-	m2, ok := m["U"].(map[string]interface{})
+	m2, ok := m["U"].(map[string]any)
 	req.True(ok)
 	req.Equal("AB", m2["X"])
-	m2, ok = m["V"].(map[string]interface{})
+	m2, ok = m["V"].(map[string]any)
 	req.True(ok)
 	req.Equal("CD", m2["X"])
-	req.Equal([]interface{}{1, 2, 3}, m["S"])
+	req.Equal([]any{1, 2, 3}, m["S"])
 
 	m, err = ToMap(&x)
 	req.Nil(err)
 	req.Equal(5, len(m))
 	req.Equal(1234, m["X"])
 	req.Equal("abcd", m["y"])
-	m2, ok = m["U"].(map[string]interface{})
+	m2, ok = m["U"].(map[string]any)
 	req.True(ok)
 	req.Equal("AB", m2["X"])
-	m2, ok = m["V"].(map[string]interface{})
+	m2, ok = m["V"].(map[string]any)
 	req.True(ok)
 	req.Equal("CD", m2["X"])
-	req.Equal([]interface{}{1, 2, 3}, m["S"])
+	req.Equal([]any{1, 2, 3}, m["S"])
 }
 
 func TestFromMap(t *testing.T) {
@@ -76,13 +76,13 @@ func TestFromMap(t *testing.T) {
 		}
 	)
 
-	obj, err := FromMap[A](map[string]interface{}{
+	obj, err := FromMap[A](map[string]any{
 		"X": 1234,
 		"y": "abcd",
 		"z": 12.34,
-		"U": map[string]interface{}{"X": "AB"},
-		"V": map[string]interface{}{"X": "CD"},
-		"S": []interface{}{1, 2, 3},
+		"U": map[string]any{"X": "AB"},
+		"V": map[string]any{"X": "CD"},
+		"S": []any{1, 2, 3},
 	})
 	req.Nil(err)
 	req.Equal(1234, obj.X)
