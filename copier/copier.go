@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// ToMap ...
+// ToMap converts an object into a map.
 func ToMap(obj any) (map[string]any, error) {
 	v := reflect.ValueOf(obj)
 	if v.Kind() == reflect.Pointer {
@@ -55,7 +55,7 @@ func toMapValue(v reflect.Value) (any, error) {
 	return v.Interface(), nil
 }
 
-// FromMap ...
+// FromMap converts a map into an object.
 func FromMap[T any](m map[string]any) (*T, error) {
 	obj := new(T)
 	if err := fromMap(m, reflect.ValueOf(obj).Elem()); err != nil {
