@@ -3,10 +3,10 @@ module github.com/phomola/ai-go
 go 1.25.0
 
 require (
-	github.com/fealsamh/go-utils v0.1.65
+	github.com/fealsamh/go-utils v0.1.66
 	github.com/google/jsonschema-go v0.4.2
 	github.com/stretchr/testify v1.11.1
-	google.golang.org/genai v1.46.0
+	google.golang.org/genai v1.47.0
 )
 
 require (
