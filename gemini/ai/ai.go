@@ -24,6 +24,8 @@ const (
 	Gemini3FlashPreview Model = "gemini-3-flash-preview"
 	// Gemini3ProPreview represents the Gemini 3 Pro Preview model.
 	Gemini3ProPreview Model = "gemini-3-pro-preview"
+	// Gemini31ProPreview represents the Gemini 3.1 Pro Preview model.
+	Gemini31ProPreview Model = "gemini-3.1-pro-preview"
 )
 
 // NewClient creates a new client.
