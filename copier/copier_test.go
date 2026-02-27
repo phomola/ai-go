@@ -1,6 +1,7 @@
 package copier
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -85,6 +86,42 @@ func TestFromMap(t *testing.T) {
 		"S": []any{1, 2, 3},
 	})
 	req.Nil(err)
+	req.Equal(1234, obj.X)
+	req.Equal("abcd", obj.Y)
+	req.Equal(12.34, obj.Z)
+	req.Equal("AB", obj.U.X)
+	req.Equal("CD", obj.V.X)
+	req.Equal([]int{1, 2, 3}, obj.S)
+}
+
+func TestFromMapAny(t *testing.T) {
+	req := require.New(t)
+
+	type (
+		B struct {
+			X string
+		}
+		A struct {
+			X int
+			Y string  `json:"y"`
+			Z float64 `json:"z"`
+			U B
+			V *B
+			S []int
+		}
+	)
+
+	x, err := FromMapAny(map[string]any{
+		"X": 1234,
+		"y": "abcd",
+		"z": 12.34,
+		"U": map[string]any{"X": "AB"},
+		"V": map[string]any{"X": "CD"},
+		"S": []any{1, 2, 3},
+	}, reflect.TypeFor[A]())
+	req.Nil(err)
+	obj, ok := x.(*A)
+	req.True(ok)
 	req.Equal(1234, obj.X)
 	req.Equal("abcd", obj.Y)
 	req.Equal(12.34, obj.Z)
