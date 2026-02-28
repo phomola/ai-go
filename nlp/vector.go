@@ -1,4 +1,4 @@
-package embedding
+package nlp
 
 import (
 	"database/sql"
