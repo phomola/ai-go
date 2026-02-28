@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"math"
 	"strconv"
 	"strings"
 
@@ -17,6 +18,32 @@ var (
 
 // Vector is a numerical vector with driver value support.
 type Vector []float64
+
+// Length returns the length of the vector.
+func (v Vector) Length() float64 {
+	var sum float64
+	for _, x := range v {
+		sum += x * x
+	}
+	return math.Sqrt(sum)
+}
+
+// Normalise normalises the vector.
+func (v Vector) Normalise() {
+	l := v.Length()
+	for i, x := range v {
+		v[i] = x / l
+	}
+}
+
+// DotProd calculates the scalar product.
+func DotProd(v1, v2 Vector) float64 {
+	var r float64
+	for i, x := range v1 {
+		r += x * v2[i]
+	}
+	return r
+}
 
 // Value returns the driver value.
 func (v Vector) Value() (driver.Value, error) {
