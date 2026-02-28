@@ -2,6 +2,7 @@ package infer
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,6 +23,9 @@ type tool struct{}
 func (t *tool) Func1(_ context.Context, in *input, _ *struct {
 	Info any `guide:"GUIDE"`
 }) (*output, error) {
+	if in.Name == "" {
+		return nil, errors.New("no name provided")
+	}
 	return &output{
 		Data: in.Name + in.Name,
 		Num:  in.Age * 2,
@@ -43,4 +47,8 @@ func TestFunctionInference(t *testing.T) {
 	})
 	req.Nil(err)
 	req.Equal(map[string]any{"Data": "JohnJohn", "Num": 40}, out)
+
+	out, err = funcs[0].Fn(context.Background(), map[string]any{})
+	req.NotNil(err)
+	req.Equal("no name provided", err.Error())
 }
