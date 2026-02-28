@@ -9,8 +9,8 @@ import (
 )
 
 type input struct {
-	Name string
-	Age  int
+	Name string `jsonschema:"The name."`
+	Age  int    `jsonschema:"The age."`
 }
 
 type output struct {
@@ -40,6 +40,14 @@ func TestFunctionInference(t *testing.T) {
 	req.Equal(1, len(funcs))
 	req.Equal("Func1", funcs[0].Name)
 	req.Equal("GUIDE", funcs[0].Description)
+	req.Equal(2, len(funcs[0].Arguments))
+	req.Equal(Argument{Name: "Name", Guide: "The name."}, funcs[0].Arguments[0])
+	req.Equal(Argument{Name: "Age", Guide: "The age."}, funcs[0].Arguments[1])
+	req.Equal(`GUIDE
+
+Arguments:
+Name: The name.
+Age: The age.`, funcs[0].FullDescription())
 
 	out, err := funcs[0].Fn(context.Background(), map[string]any{
 		"Name": "John",

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/phomola/ai-go/copier"
@@ -14,13 +15,39 @@ var (
 	errorType   = reflect.TypeFor[error]()
 )
 
+// Argument ...
+type Argument struct {
+	Name  string
+	Guide string
+}
+
 // Function ...
 type Function struct {
 	Name        string
 	Description string
+	Arguments   []Argument
 	InSchema    *jsonschema.Schema
 	OutSchema   *jsonschema.Schema
 	Fn          func(context.Context, map[string]any) (map[string]any, error)
+}
+
+// FullDescription ...
+func (f *Function) FullDescription() string {
+	var sb strings.Builder
+	if f.Description != "" {
+		sb.WriteString(f.Description)
+		sb.WriteString("\n\n")
+	}
+	sb.WriteString("Arguments:\n")
+	for i, arg := range f.Arguments {
+		sb.WriteString(arg.Name)
+		sb.WriteString(": ")
+		sb.WriteString(arg.Guide)
+		if i+1 < len(f.Arguments) {
+			sb.WriteString("\n")
+		}
+	}
+	return sb.String()
 }
 
 // Functions ...
@@ -59,6 +86,14 @@ func Functions[T any](obj *T) ([]*Function, error) {
 		}
 		inType := m.Type.In(2).Elem()
 		outType := m.Type.Out(0).Elem()
+		args := make([]Argument, 0, inType.NumField())
+		for j := 0; j < inType.NumField(); j++ {
+			field := inType.Field(j)
+			args = append(args, Argument{
+				Name:  field.Name,
+				Guide: field.Tag.Get("jsonschema"),
+			})
+		}
 		inSchema, err := jsonschema.ForType(inType, nil)
 		if err != nil {
 			return nil, err
@@ -70,6 +105,7 @@ func Functions[T any](obj *T) ([]*Function, error) {
 		funcs = append(funcs, &Function{
 			Name:        m.Name,
 			Description: methodDesc,
+			Arguments:   args,
 			InSchema:    inSchema,
 			OutSchema:   outSchema,
 			Fn: func(ctx context.Context, inMap map[string]any) (map[string]any, error) {
