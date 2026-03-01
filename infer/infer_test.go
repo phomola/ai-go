@@ -59,4 +59,8 @@ Age: The age.`, funcs[0].FullDescription())
 	out, err = funcs[0].Fn(context.Background(), map[string]any{})
 	req.NotNil(err)
 	req.Equal("no name provided", err.Error())
+
+	tool, err := GeminiTool(funcs)
+	req.Nil(err)
+	req.Equal(1, len(tool.Functions))
 }
