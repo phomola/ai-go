@@ -8,12 +8,24 @@ import (
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/phomola/ai-go/copier"
+	"github.com/phomola/ai-go/gemini/ai"
 )
 
 var (
 	contextType = reflect.TypeFor[context.Context]()
 	errorType   = reflect.TypeFor[error]()
 )
+
+// GeminiTool ...
+func GeminiTool(funcs []*Function) (*ai.Tool, error) {
+	var tool ai.Tool
+	for _, f := range funcs {
+		if err := tool.AddFunction(f.Name, f.FullDescription(), f.InSchema, f.OutSchema, f.Fn); err != nil {
+			return nil, err
+		}
+	}
+	return &tool, nil
+}
 
 // Argument ...
 type Argument struct {
@@ -53,6 +65,7 @@ func (f *Function) FullDescription() string {
 // Functions ...
 func Functions[T any](obj *T) ([]*Function, error) {
 	typ := reflect.TypeFor[*T]()
+	typName := typ.Elem().Name()
 	funcs := make([]*Function, 0, typ.NumMethod())
 	objPtr := reflect.ValueOf(obj)
 	for i := 0; i < typ.NumMethod(); i++ {
@@ -103,7 +116,7 @@ func Functions[T any](obj *T) ([]*Function, error) {
 			return nil, err
 		}
 		funcs = append(funcs, &Function{
-			Name:        m.Name,
+			Name:        typName + "::" + m.Name,
 			Description: methodDesc,
 			Arguments:   args,
 			InSchema:    inSchema,

@@ -38,7 +38,7 @@ func TestFunctionInference(t *testing.T) {
 	funcs, err := Functions(new(tool))
 	req.Nil(err)
 	req.Equal(1, len(funcs))
-	req.Equal("Func1", funcs[0].Name)
+	req.Equal("tool::Func1", funcs[0].Name)
 	req.Equal("GUIDE", funcs[0].Description)
 	req.Equal(2, len(funcs[0].Arguments))
 	req.Equal(Argument{Name: "Name", Guide: "The name."}, funcs[0].Arguments[0])
