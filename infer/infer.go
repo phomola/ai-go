@@ -116,7 +116,7 @@ func Functions[T any](obj *T) ([]*Function, error) {
 			return nil, err
 		}
 		funcs = append(funcs, &Function{
-			Name:        typName + "::" + m.Name,
+			Name:        typName + ":" + m.Name,
 			Description: methodDesc,
 			Arguments:   args,
 			InSchema:    inSchema,

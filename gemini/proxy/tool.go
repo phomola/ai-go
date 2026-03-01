@@ -24,7 +24,7 @@ type function struct {
 }
 
 // Tool creates a proxy tool.
-func Tool(functions []*infer.Function, emb nlp.Embedding) (*ai.Tool, error) {
+func Tool(functions []*infer.Function, emb nlp.Embedding, cl *ai.Client) (*ai.Tool, error) {
 	funcs := make([]*function, 0, len(functions))
 	for _, f := range functions {
 		vec, err := emb.Vector(f.Description)
@@ -54,13 +54,9 @@ func Tool(functions []*infer.Function, emb nlp.Embedding) (*ai.Tool, error) {
 				fn = f.fn
 			}
 		}
-		fmt.Println("proxy picked:", fn.Name)
+		fmt.Println("proxy picked:", fn.Name, "original prompt:", in.Prompt)
 		var tool ai.Tool
 		if err := tool.AddFunction(fn.Name, fn.Description, fn.InSchema, fn.OutSchema, fn.Fn); err != nil {
-			return nil, err
-		}
-		cl, err := ai.NewClient(ctx, ai.Gemini3FlashPreview)
-		if err != nil {
 			return nil, err
 		}
 		resp, err := cl.GenerateText(ctx, ai.NewText(in.Prompt), []*ai.Tool{&tool})
