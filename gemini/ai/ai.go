@@ -90,7 +90,7 @@ func (cl *Client) generate(ctx context.Context, in []*genai.Content, config *gen
 	if len(resp.FunctionCalls()) > 0 {
 		functions := make(map[string]func(context.Context, map[string]any) (map[string]any, error))
 		for _, t := range tools {
-			maps.Copy(functions, t.functions)
+			maps.Copy(functions, t.Functions)
 		}
 		in = append(in, resp.Candidates[0].Content)
 		for _, call := range resp.FunctionCalls() {

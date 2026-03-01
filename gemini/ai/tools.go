@@ -10,12 +10,12 @@ import (
 
 // Tool is an LLM tool with functions.
 type Tool struct {
-	funcDecls []*genai.FunctionDeclaration
-	functions map[string]func(context.Context, map[string]any) (map[string]any, error)
+	FuncDecls []*genai.FunctionDeclaration
+	Functions map[string]func(context.Context, map[string]any) (map[string]any, error)
 }
 
 func (tool *Tool) tool() *genai.Tool {
-	return &genai.Tool{FunctionDeclarations: tool.funcDecls}
+	return &genai.Tool{FunctionDeclarations: tool.FuncDecls}
 }
 
 // AddFunction adds a function to a tool.
@@ -36,16 +36,16 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(context.
 	if err != nil {
 		return err
 	}
-	tool.funcDecls = append(tool.funcDecls, &genai.FunctionDeclaration{
+	tool.FuncDecls = append(tool.FuncDecls, &genai.FunctionDeclaration{
 		Name:                 name,
 		Description:          description,
 		ParametersJsonSchema: inSchema,
 		ResponseJsonSchema:   outSchema,
 	})
-	if tool.functions == nil {
-		tool.functions = make(map[string]func(context.Context, map[string]any) (map[string]any, error))
+	if tool.Functions == nil {
+		tool.Functions = make(map[string]func(context.Context, map[string]any) (map[string]any, error))
 	}
-	tool.functions[name] = func(ctx context.Context, inMap map[string]any) (map[string]any, error) {
+	tool.Functions[name] = func(ctx context.Context, inMap map[string]any) (map[string]any, error) {
 		if err := inRs.Validate(inMap); err != nil {
 			return nil, err
 		}
@@ -79,16 +79,16 @@ func (tool *Tool) AddFunction(name, description string, inSchema, outSchema *jso
 	if err != nil {
 		return err
 	}
-	tool.funcDecls = append(tool.funcDecls, &genai.FunctionDeclaration{
+	tool.FuncDecls = append(tool.FuncDecls, &genai.FunctionDeclaration{
 		Name:                 name,
 		Description:          description,
 		ParametersJsonSchema: inSchema,
 		ResponseJsonSchema:   outSchema,
 	})
-	if tool.functions == nil {
-		tool.functions = make(map[string]func(context.Context, map[string]any) (map[string]any, error))
+	if tool.Functions == nil {
+		tool.Functions = make(map[string]func(context.Context, map[string]any) (map[string]any, error))
 	}
-	tool.functions[name] = func(ctx context.Context, inMap map[string]any) (map[string]any, error) {
+	tool.Functions[name] = func(ctx context.Context, inMap map[string]any) (map[string]any, error) {
 		if err := inRs.Validate(inMap); err != nil {
 			return nil, err
 		}
