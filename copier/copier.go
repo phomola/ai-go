@@ -64,6 +64,15 @@ func FromMap[T any](m map[string]any) (*T, error) {
 	return obj, nil
 }
 
+// FromMapAny converts a map into an object.
+func FromMapAny(m map[string]any, typ reflect.Type) (any, error) {
+	obj := reflect.New(typ)
+	if err := fromMap(m, obj.Elem()); err != nil {
+		return nil, err
+	}
+	return obj.Interface(), nil
+}
+
 func fromMap(m map[string]any, v reflect.Value) error {
 	t := v.Type()
 	for i := 0; i < t.NumField(); i++ {
