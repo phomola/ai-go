@@ -1,6 +1,8 @@
 package ai
 
 import (
+	"context"
+
 	"github.com/phomola/ai-go/copier"
 	"google.golang.org/genai"
 )
@@ -8,11 +10,11 @@ import (
 // Tool is an LLM tool with functions.
 type Tool struct {
 	funcDecls []*genai.FunctionDeclaration
-	functions map[string]func(map[string]any) (map[string]any, error)
+	functions map[string]func(context.Context, map[string]any) (map[string]any, error)
 }
 
 // AddFunction adds a function to a tool.
-func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O, error)) error {
+func AddFunction[I, O any](tool *Tool, name, description string, f func(context.Context, *I) (*O, error)) error {
 	inSchema, err := schemaFor[I]()
 	if err != nil {
 		return err
@@ -36,9 +38,9 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O,
 		ResponseJsonSchema:   outSchema,
 	})
 	if tool.functions == nil {
-		tool.functions = make(map[string]func(map[string]any) (map[string]any, error))
+		tool.functions = make(map[string]func(context.Context, map[string]any) (map[string]any, error))
 	}
-	tool.functions[name] = func(inMap map[string]any) (map[string]any, error) {
+	tool.functions[name] = func(ctx context.Context, inMap map[string]any) (map[string]any, error) {
 		if err := inRs.Validate(inMap); err != nil {
 			return nil, err
 		}
@@ -46,7 +48,7 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(*I) (*O,
 		if err != nil {
 			return nil, err
 		}
-		out, err := f(in)
+		out, err := f(ctx, in)
 		if err != nil {
 			return nil, err
 		}

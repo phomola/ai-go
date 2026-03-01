@@ -88,7 +88,7 @@ func (cl *Client) generate(ctx context.Context, in []*genai.Content, config *gen
 		return nil, err
 	}
 	if len(resp.FunctionCalls()) > 0 {
-		functions := make(map[string]func(map[string]any) (map[string]any, error))
+		functions := make(map[string]func(context.Context, map[string]any) (map[string]any, error))
 		for _, t := range tools {
 			maps.Copy(functions, t.functions)
 		}
@@ -98,7 +98,7 @@ func (cl *Client) generate(ctx context.Context, in []*genai.Content, config *gen
 			if !ok {
 				return nil, fmt.Errorf("tool function '%s' unknown", call.Name)
 			}
-			out, err := f(call.Args)
+			out, err := f(ctx, call.Args)
 			if err != nil {
 				return nil, err
 			}
