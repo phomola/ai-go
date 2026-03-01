@@ -54,8 +54,22 @@ func Tool(functions []*infer.Function, emb nlp.Embedding) (*ai.Tool, error) {
 				fn = f.fn
 			}
 		}
-		fmt.Println("picked:", fn.Name)
-		return nil, nil
+		fmt.Println("proxy picked:", fn.Name)
+		var tool ai.Tool
+		if err := tool.AddFunction(fn.Name, fn.Description, fn.InSchema, fn.OutSchema, fn.Fn); err != nil {
+			return nil, err
+		}
+		cl, err := ai.NewClient(ctx, ai.Gemini3FlashPreview)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := cl.GenerateText(ctx, ai.NewText(in.Prompt), []*ai.Tool{&tool})
+		if err != nil {
+			return nil, err
+		}
+		return &proxyOutput{
+			Output: resp.String(),
+		}, nil
 	}); err != nil {
 		return nil, err
 	}
