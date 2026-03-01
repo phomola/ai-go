@@ -3,6 +3,7 @@ package ai
 import (
 	"context"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/phomola/ai-go/copier"
 	"google.golang.org/genai"
 )
@@ -11,6 +12,10 @@ import (
 type Tool struct {
 	funcDecls []*genai.FunctionDeclaration
 	functions map[string]func(context.Context, map[string]any) (map[string]any, error)
+}
+
+func (tool *Tool) tool() *genai.Tool {
+	return &genai.Tool{FunctionDeclarations: tool.funcDecls}
 }
 
 // AddFunction adds a function to a tool.
@@ -64,6 +69,37 @@ func AddFunction[I, O any](tool *Tool, name, description string, f func(context.
 	return nil
 }
 
-func (t *Tool) tool() *genai.Tool {
-	return &genai.Tool{FunctionDeclarations: t.funcDecls}
+// AddFunction adds a function to a tool.
+func (tool *Tool) AddFunction(name, description string, inSchema, outSchema *jsonschema.Schema, f func(context.Context, map[string]any) (map[string]any, error)) error {
+	inRs, err := inSchema.Resolve(nil)
+	if err != nil {
+		return err
+	}
+	outRs, err := outSchema.Resolve(nil)
+	if err != nil {
+		return err
+	}
+	tool.funcDecls = append(tool.funcDecls, &genai.FunctionDeclaration{
+		Name:                 name,
+		Description:          description,
+		ParametersJsonSchema: inSchema,
+		ResponseJsonSchema:   outSchema,
+	})
+	if tool.functions == nil {
+		tool.functions = make(map[string]func(context.Context, map[string]any) (map[string]any, error))
+	}
+	tool.functions[name] = func(ctx context.Context, inMap map[string]any) (map[string]any, error) {
+		if err := inRs.Validate(inMap); err != nil {
+			return nil, err
+		}
+		outMap, err := f(ctx, inMap)
+		if err != nil {
+			return nil, err
+		}
+		if err := outRs.Validate(outMap); err != nil {
+			return nil, err
+		}
+		return outMap, nil
+	}
+	return nil
 }
