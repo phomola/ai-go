@@ -54,7 +54,7 @@ func main() {
 	}
 
 	var weatherTool ai.Tool
-	if err := ai.AddFunction(&weatherTool, "weatherTool", "Provides weather forecasts for the US.", func(in *weatherRequest) (*toolOutput, error) {
+	if err := ai.AddFunction(&weatherTool, "weatherTool", "Provides weather forecasts for the US.", func(ctx context.Context, in *weatherRequest) (*toolOutput, error) {
 		b, err := json.Marshal(in)
 		if err != nil {
 			return nil, err
