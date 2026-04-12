@@ -36,3 +36,14 @@ func Tokenise(text string) []Token {
 	}
 	return tokens
 }
+
+// GetTerms ...
+func GetTerms(tokens []Token) []string {
+	ts := make([]string, 0, len(tokens))
+	for _, t := range tokens {
+		if t.IsAlphanum {
+			ts = append(ts, t.Form)
+		}
+	}
+	return ts
+}

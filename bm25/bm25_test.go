@@ -35,4 +35,12 @@ func TestCorpus(t *testing.T) {
 		docs := c.SearchOne("ijkl", 1.2, 0.75)
 		req.Equal("2", docs[0].Document.ID)
 	}
+	{
+		docs := c.SearchMore([]string{"abcd"}, 1.2, 0.75)
+		req.Equal("1", docs[0].Document.ID)
+	}
+	{
+		docs := c.SearchMore([]string{"ijkl"}, 1.2, 0.75)
+		req.Equal("2", docs[0].Document.ID)
+	}
 }

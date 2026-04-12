@@ -1,7 +1,6 @@
 package bm25
 
 import (
-	"fmt"
 	"math"
 	"sort"
 )
@@ -88,7 +87,27 @@ func (c *Corpus) SearchOne(q string, k1, b float64) []ScoredDocument {
 	scoredDocs := make([]ScoredDocument, 0, len(c.Documents))
 	for _, doc := range c.Documents {
 		score := c.Score(doc, q, k1, b)
-		fmt.Println(doc.ID, score)
+		// fmt.Println(doc.ID, score)
+		scoredDocs = append(scoredDocs, ScoredDocument{
+			Score:    score,
+			Document: doc,
+		})
+	}
+	sort.Slice(scoredDocs, func(i, j int) bool {
+		return scoredDocs[i].Score > scoredDocs[j].Score
+	})
+	return scoredDocs
+}
+
+// SearchMore ...
+func (c *Corpus) SearchMore(qs []string, k1, b float64) []ScoredDocument {
+	scoredDocs := make([]ScoredDocument, 0, len(c.Documents))
+	for _, doc := range c.Documents {
+		var score float64
+		for _, q := range qs {
+			score += c.Score(doc, q, k1, b)
+		}
+		// fmt.Println(doc.ID, score)
 		scoredDocs = append(scoredDocs, ScoredDocument{
 			Score:    score,
 			Document: doc,
