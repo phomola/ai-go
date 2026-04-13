@@ -3,6 +3,8 @@ package bm25
 import (
 	"math"
 	"sort"
+
+	"github.com/phomola/ai-go/rag"
 )
 
 // Document ...
@@ -16,7 +18,7 @@ type Document struct {
 // NewDocument ...
 func NewDocument(id, text string) *Document {
 	l, tf := 0, make(map[string]int)
-	for _, t := range Tokenise(text) {
+	for _, t := range rag.Tokenise(text) {
 		if !t.IsAlphanum {
 			continue
 		}
