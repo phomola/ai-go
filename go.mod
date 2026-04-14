@@ -6,7 +6,7 @@ require (
 	github.com/fealsamh/go-utils v0.1.70
 	github.com/google/jsonschema-go v0.4.2
 	github.com/stretchr/testify v1.11.1
-	google.golang.org/genai v1.53.0
+	google.golang.org/genai v1.54.0
 )
 
 require (
@@ -34,7 +34,7 @@ require (
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
 	google.golang.org/api v0.275.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260413175733-85fdc51ac911 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260413220744-3e5c5a5a0756 // indirect
 	google.golang.org/grpc v1.80.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
