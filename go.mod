@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/fealsamh/go-utils v0.1.70
-	github.com/google/jsonschema-go v0.4.2
+	github.com/google/jsonschema-go v0.4.3
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/genai v1.54.0
 )
