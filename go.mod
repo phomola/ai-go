@@ -3,7 +3,7 @@ module github.com/phomola/ai-go
 go 1.25.8
 
 require (
-	github.com/fealsamh/go-utils v0.1.71
+	github.com/fealsamh/go-utils v0.1.72-0.20260609194303-0e4342dac5da
 	github.com/google/jsonschema-go v0.4.3
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/genai v1.59.0
