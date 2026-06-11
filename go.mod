@@ -3,10 +3,10 @@ module github.com/phomola/ai-go
 go 1.25.8
 
 require (
-	github.com/fealsamh/go-utils v0.1.72-0.20260609194303-0e4342dac5da
+	github.com/fealsamh/go-utils v0.1.72
 	github.com/google/jsonschema-go v0.4.3
 	github.com/stretchr/testify v1.11.1
-	google.golang.org/genai v1.59.0
+	google.golang.org/genai v1.60.0
 )
 
 require (
@@ -30,11 +30,11 @@ require (
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	golang.org/x/crypto v0.53.0 // indirect
-	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	google.golang.org/api v0.284.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260608224507-4308a22a1bab // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260610212136-7ab31c22f7ad // indirect
 	google.golang.org/grpc v1.81.1 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
