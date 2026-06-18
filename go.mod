@@ -6,7 +6,7 @@ require (
 	github.com/fealsamh/go-utils v0.1.72
 	github.com/google/jsonschema-go v0.4.3
 	github.com/stretchr/testify v1.11.1
-	google.golang.org/genai v1.60.0
+	google.golang.org/genai v1.61.0
 )
 
 require (
