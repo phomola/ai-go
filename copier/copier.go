@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// ToMap ...
+// ToMap converts an object into a map.
 func ToMap(obj any) (map[string]any, error) {
 	v := reflect.ValueOf(obj)
 	if v.Kind() == reflect.Pointer {
@@ -24,7 +24,7 @@ func ToMap(obj any) (map[string]any, error) {
 			continue
 		}
 		fn := f.Name
-		if n := strings.Split(js, ",")[0]; n != "" {
+		if n, _, _ := strings.Cut(js, ","); n != "" {
 			fn = n
 		}
 		v2, err := toMapValue(v.FieldByIndex(f.Index))
@@ -55,13 +55,22 @@ func toMapValue(v reflect.Value) (any, error) {
 	return v.Interface(), nil
 }
 
-// FromMap ...
+// FromMap converts a map into an object.
 func FromMap[T any](m map[string]any) (*T, error) {
 	obj := new(T)
 	if err := fromMap(m, reflect.ValueOf(obj).Elem()); err != nil {
 		return nil, err
 	}
 	return obj, nil
+}
+
+// FromMapAny converts a map into an object.
+func FromMapAny(m map[string]any, typ reflect.Type) (any, error) {
+	obj := reflect.New(typ)
+	if err := fromMap(m, obj.Elem()); err != nil {
+		return nil, err
+	}
+	return obj.Interface(), nil
 }
 
 func fromMap(m map[string]any, v reflect.Value) error {
@@ -73,7 +82,7 @@ func fromMap(m map[string]any, v reflect.Value) error {
 			continue
 		}
 		fn := f.Name
-		if n := strings.Split(js, ",")[0]; n != "" {
+		if n, _, _ := strings.Cut(js, ","); n != "" {
 			fn = n
 		}
 		x, ok := m[fn]
