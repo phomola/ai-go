@@ -24,7 +24,7 @@ func ToMap(obj any) (map[string]any, error) {
 			continue
 		}
 		fn := f.Name
-		if n := strings.Split(js, ",")[0]; n != "" {
+		if n, _, _ := strings.Cut(js, ","); n != "" {
 			fn = n
 		}
 		v2, err := toMapValue(v.FieldByIndex(f.Index))
@@ -82,7 +82,7 @@ func fromMap(m map[string]any, v reflect.Value) error {
 			continue
 		}
 		fn := f.Name
-		if n := strings.Split(js, ",")[0]; n != "" {
+		if n, _, _ := strings.Cut(js, ","); n != "" {
 			fn = n
 		}
 		x, ok := m[fn]
