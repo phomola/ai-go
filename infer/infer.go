@@ -68,8 +68,7 @@ func Functions[T any](obj *T) ([]*Function, error) {
 	typName := typ.Elem().Name()
 	funcs := make([]*Function, 0, typ.NumMethod())
 	objPtr := reflect.ValueOf(obj)
-	for i := 0; i < typ.NumMethod(); i++ {
-		m := typ.Method(i)
+	for m := range typ.Methods() {
 		if m.Type.NumIn() != 4 {
 			return nil, fmt.Errorf("method '%s' must have 3 arguments", m.Name)
 		}
@@ -100,8 +99,7 @@ func Functions[T any](obj *T) ([]*Function, error) {
 		inType := m.Type.In(2).Elem()
 		outType := m.Type.Out(0).Elem()
 		args := make([]Argument, 0, inType.NumField())
-		for j := 0; j < inType.NumField(); j++ {
-			field := inType.Field(j)
+		for field := range inType.Fields() {
 			args = append(args, Argument{
 				Name:  field.Name,
 				Guide: field.Tag.Get("jsonschema"),

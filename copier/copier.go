@@ -17,8 +17,7 @@ func ToMap(obj any) (map[string]any, error) {
 		return nil, fmt.Errorf("only instances of struct and pointer to struct can be converted to map (has %s)", t)
 	}
 	m := make(map[string]any, t.NumField())
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
+	for f := range t.Fields() {
 		js := f.Tag.Get("json")
 		if js == "-" {
 			continue
@@ -75,8 +74,7 @@ func FromMapAny(m map[string]any, typ reflect.Type) (any, error) {
 
 func fromMap(m map[string]any, v reflect.Value) error {
 	t := v.Type()
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
+	for f := range t.Fields() {
 		js := f.Tag.Get("json")
 		if js == "-" {
 			continue

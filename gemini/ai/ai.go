@@ -55,7 +55,7 @@ func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content, tools [
 }
 
 // Generate generates a structured response.
-func Generate[T any](ctx context.Context, cl *Client, in []*genai.Content, tools []*Tool) (*T, error) {
+func (cl *Client) Generate[T any](ctx context.Context,  in []*genai.Content, tools []*Tool) (*T, error) {
 	schema, err := schemaFor[T]()
 	if err != nil {
 		return nil, err
