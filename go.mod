@@ -1,9 +1,9 @@
 module github.com/phomola/ai-go
 
-go 1.26.5
+go 1.27
 
 require (
-	github.com/fealsamh/go-utils v0.1.76
+	github.com/fealsamh/go-utils v0.1.77
 	github.com/google/jsonschema-go v0.4.3
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/genai v1.62.0
@@ -37,5 +37,8 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260727163830-6c54dddc4772 // indirect
 	google.golang.org/grpc v1.82.1 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260810153831-ec0a7760b754 // indirect
+	google.golang.org/grpc v1.83.0 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

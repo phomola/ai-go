@@ -61,7 +61,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	resp, err := ai.Generate[CV](ctx, cl,
+	resp, err := cl.Generate[CV](ctx,
 		ai.NewTextWithBytes("Extract relevant information for the CV file.", b, mimeType), nil)
 	if err != nil {
 		log.Fatal(err)
