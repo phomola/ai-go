@@ -2,7 +2,7 @@ package ai
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"maps"
 
@@ -55,7 +55,7 @@ func (cl *Client) GenerateText(ctx context.Context, in []*genai.Content, tools [
 }
 
 // Generate generates a structured response.
-func (cl *Client) Generate[T any](ctx context.Context,  in []*genai.Content, tools []*Tool) (*T, error) {
+func (cl *Client) Generate[T any](ctx context.Context, in []*genai.Content, tools []*Tool) (*T, error) {
 	schema, err := schemaFor[T]()
 	if err != nil {
 		return nil, err

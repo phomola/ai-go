@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"log"
 	"net/http"
@@ -78,7 +78,7 @@ func main() {
 			return nil, fmt.Errorf("unexpected status code: %s", resp.Status)
 		}
 		var out weatherResponse
-		if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		if err := json.UnmarshalRead(resp.Body, &out); err != nil {
 			return nil, err
 		}
 		fmt.Printf("got weather forecast for %s/%s\n", out.City, out.State)
