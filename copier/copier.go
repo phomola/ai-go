@@ -99,7 +99,7 @@ func fromMapValue(x any, v reflect.Value) error {
 	if t.Kind() == reflect.Struct {
 		m, ok := x.(map[string]any)
 		if !ok {
-			return fmt.Errorf("expected map instead of '%s'", x)
+			return fmt.Errorf("expected map instead of '%v'", x)
 		}
 		if err := fromMap(m, v); err != nil {
 			return err
@@ -107,7 +107,7 @@ func fromMapValue(x any, v reflect.Value) error {
 	} else if t.Kind() == reflect.Pointer && t.Elem().Kind() == reflect.Struct {
 		m, ok := x.(map[string]any)
 		if !ok {
-			return fmt.Errorf("expected map instead of '%s'", x)
+			return fmt.Errorf("expected map instead of '%v'", x)
 		}
 		v2 := reflect.New(t.Elem())
 		if err := fromMap(m, v2.Elem()); err != nil {
@@ -117,7 +117,7 @@ func fromMapValue(x any, v reflect.Value) error {
 	} else if t.Kind() == reflect.Slice {
 		sl, ok := x.([]any)
 		if !ok {
-			return fmt.Errorf("expected slice instead of '%s'", x)
+			return fmt.Errorf("expected slice instead of '%v'", x)
 		}
 		v2 := reflect.MakeSlice(t, len(sl), len(sl))
 		for i, x := range sl {
@@ -145,7 +145,7 @@ func fromMapValue(x any, v reflect.Value) error {
 			case float64:
 				v.SetInt(int64(x2))
 			default:
-				return fmt.Errorf("expected number instead of '%s'", x)
+				return fmt.Errorf("expected number instead of '%v'", x)
 			}
 		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			switch x2 := x.(type) {
@@ -159,8 +159,12 @@ func fromMapValue(x any, v reflect.Value) error {
 				v.SetUint(uint64(x2))
 			case uint64:
 				v.SetUint(uint64(x2))
+			case float32:
+				v.SetUint(uint64(x2))
+			case float64:
+				v.SetUint(uint64(x2))
 			default:
-				return fmt.Errorf("expected number instead of '%s'", x)
+				return fmt.Errorf("expected number instead of '%v'", x)
 			}
 		case reflect.Float32, reflect.Float64:
 			switch x2 := x.(type) {
@@ -189,18 +193,18 @@ func fromMapValue(x any, v reflect.Value) error {
 			case float64:
 				v.SetFloat(x2)
 			default:
-				return fmt.Errorf("expected number instead of '%s'", x)
+				return fmt.Errorf("expected number instead of '%v'", x)
 			}
 		case reflect.String:
 			x2, ok := x.(string)
 			if !ok {
-				return fmt.Errorf("expected string instead of '%s'", x)
+				return fmt.Errorf("expected string instead of '%v'", x)
 			}
 			v.SetString(x2)
 		case reflect.Bool:
 			x2, ok := x.(bool)
 			if !ok {
-				return fmt.Errorf("expected boolean instead of '%s'", x)
+				return fmt.Errorf("expected boolean instead of '%v'", x)
 			}
 			v.SetBool(x2)
 		default:
