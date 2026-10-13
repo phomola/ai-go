@@ -56,7 +56,7 @@ Age: The age.`, funcs[0].FullDescription())
 	req.Nil(err)
 	req.Equal(map[string]any{"Data": "JohnJohn", "Num": 40}, out)
 
-	out, err = funcs[0].Fn(context.Background(), map[string]any{})
+	_, err = funcs[0].Fn(context.Background(), map[string]any{})
 	req.NotNil(err)
 	req.Equal("no name provided", err.Error())
 
