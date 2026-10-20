@@ -1,6 +1,6 @@
 module github.com/phomola/ai-go
 
-go 1.27
+go 1.27.2
 
 require (
 	github.com/fealsamh/go-utils v0.2.3
