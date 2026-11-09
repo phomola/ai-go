@@ -70,7 +70,7 @@ func main() {
 		if err != nil {
 			return nil, err
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 		if resp.StatusCode == http.StatusNotFound {
 			return &toolOutput{Error: "The location couldn't be found. The tool only provides data for the US."}, nil
 		}
